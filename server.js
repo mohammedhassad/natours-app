@@ -35,3 +35,10 @@ process.on('unhandledRejection', err => {
     process.exit(1);
   });
 });
+
+process.on('SEGTERM', () => {
+  console.log('SEGTERM RECIEVED: Shutting down gracefully');
+  server.close(() => {
+    console.log('Precess termineted');
+  });
+});
