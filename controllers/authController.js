@@ -194,7 +194,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
     user.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
 
-    console.log(err);
+    // console.log(err);
 
     return next(
       new AppError('There was an error sending the email. Try again later!')
@@ -232,7 +232,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   // 1) Get user from collection
   const user = await User.findById(req.user._id).select('+password');
 
-  console.log({ user }, req.user);
+  // console.log({ user }, req.user);
   // 2) Check if Posted current password is correct
   if (!(await user.correctPassword(req.body.passwordCurrent, user.password))) {
     return next(new AppError('Your current password is wrong.', 401));

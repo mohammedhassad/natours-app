@@ -13,7 +13,7 @@ const handleExpiredError = err =>
 
 const handleDuplicateFieldsDB = err => {
   const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
-  console.log(value);
+  // console.log(value);
 
   const message = `Duplicate field value: ${value}. Please use another value!`;
   return new AppError(message, 400);
@@ -27,8 +27,7 @@ const handleValidationErrorDB = err => {
 };
 
 const sendErrorDev = (err, req, res) => {
-
-  if(req.originalUrl.startsWith('/api')) {
+  if (req.originalUrl.startsWith('/api')) {
     res.status(err.statusCode).json({
       status: err.status,
       error: err,
@@ -39,53 +38,50 @@ const sendErrorDev = (err, req, res) => {
     res.status(err.statusCode).render('error', {
       title: 'Something went wrong!',
       msg: err.message
-    })
+    });
   }
 };
 
 // production error
 const sendErrorProd = (err, req, res) => {
   // A- Error handling for api
-  if(req.originalUrl.startsWith('/api')) { 
-      // Operational, trusted error: send message to client
-      if (err.isOperational) {
-        return res.status(err.statusCode).json({
-          status: err.status,
-          message: err.message
-        });
-
-      } 
-
-      // Programming or other unknown error: don't leak error details
-
-      // 1) Log error
-      // console.error('ERROR 💥', err);
-
-      // 2) Send generic message
-      return res.status(500).json({
-        status: 'error',
-        message: 'Something went very wrong!'
+  if (req.originalUrl.startsWith('/api')) {
+    // Operational, trusted error: send message to client
+    if (err.isOperational) {
+      return res.status(err.statusCode).json({
+        status: err.status,
+        message: err.message
       });
-  }
-  
-  // B- Error handling for render page error
-  // Operational, trusted error: send message to client
-  if (err.isOperational) {
-      return  res.status(err.statusCode).render('error', {
-        title: 'Something went wrong!',
-        msg: err.message
-      });
-    } 
+    }
 
     // Programming or other unknown error: don't leak error details
 
+    // 1) Log error
+    // console.error('ERROR 💥', err);
+
     // 2) Send generic message
-    return  res.status(err.statusCode).render('error', {
+    return res.status(500).json({
+      status: 'error',
+      message: 'Something went very wrong!'
+    });
+  }
+
+  // B- Error handling for render page error
+  // Operational, trusted error: send message to client
+  if (err.isOperational) {
+    return res.status(err.statusCode).render('error', {
       title: 'Something went wrong!',
-      msg: 'Please try again later.'
-    })
+      msg: err.message
+    });
+  }
 
+  // Programming or other unknown error: don't leak error details
 
+  // 2) Send generic message
+  return res.status(err.statusCode).render('error', {
+    title: 'Something went wrong!',
+    msg: 'Please try again later.'
+  });
 };
 
 module.exports = (err, req, res, next) => {
@@ -98,7 +94,7 @@ module.exports = (err, req, res, next) => {
     sendErrorDev(err, req, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
-    error.message = err.message
+    error.message = err.message;
 
     if (error.name === 'CastError') error = handleCastErrorDB(error);
     if (error.code === 11000) error = handleDuplicateFieldsDB(error);
