@@ -2,11 +2,11 @@
   "name": "natours-app",
   "version": "1.0.0",
   "description": "Learning node, express and mongoDB",
-  "main": "app.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "start:prod": "SET NODE_ENV=production & nodemon server.js",
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "start:prod": "SET NODE_ENV=production & nodemon index.js",
     "debug": "ndb server.js",
     "watch:js": "parcel watch ./public/js/index.js --out-dir ./public/js --out-file bundle.js",
     "build:js": "parcel build ./public/js/index.js --out-dir ./public/js --out-file bundle.js"
@@ -52,6 +52,6 @@
     "prettier": "^1.17.0"
   },
   "engines": {
-    "node": "^10"
+    "node": "^14"
   }
 }
